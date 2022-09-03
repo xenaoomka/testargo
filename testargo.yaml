@@ -1,0 +1,59 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: testargo
+
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: testargo
+  namespace: testargo
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: testargo
+  template:
+    metadata:
+      labels:
+        app: testargo
+    spec:
+      containers:
+      - image: nginx
+        name: testargo
+        ports:
+        - containerPort: 80
+
+---
+apiVersion: traefik.containo.us/v1alpha1
+kind: IngressRoute
+metadata:
+  name: testargo-ingress
+  namespace: testargo
+  annotations: 
+    kubernetes.io/ingress.class: traefik-external
+spec:
+  entryPoints:
+    - websecure
+  routes:
+    - match: Host(`testargo.skvnent.duckdns.org`)
+      kind: Rule
+      services:
+        - name: testargo
+          port: 80
+  
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: testargo
+  namespace: testargo
+spec:
+  selector:
+    app: testargo
+  ports:
+    - protocol: TCP
+      port: 80
+      targetPort: 80
