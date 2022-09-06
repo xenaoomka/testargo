@@ -11,7 +11,7 @@ metadata:
   name: testargo
   namespace: testargo
 spec:
-  replicas: 2
+  replicas: 1
   selector:
     matchLabels:
       app: testargo
